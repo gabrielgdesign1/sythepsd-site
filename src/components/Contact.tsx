@@ -31,13 +31,15 @@ export default function Contact() {
                   <Tag
                     key={s.label}
                     {...(isLink ? { href: s.url, target: "_blank", rel: "noreferrer" } : {})}
-                    className="group flex flex-col justify-between rounded-2xl glass p-5 transition-transform duration-300 hover:-translate-y-1"
+                    className="group flex h-full flex-col justify-between overflow-hidden rounded-2xl glass p-5 transition-transform duration-300 hover:-translate-y-1"
                   >
                     <span className="text-xs uppercase tracking-[0.2em] text-haze">{s.label}</span>
-                    <span className="mt-6 flex items-center justify-between">
-                      <span className="font-display text-lg font-semibold text-white">{s.handle}</span>
+                    <span className="mt-6 flex items-start justify-between gap-3">
+                      <span className="min-w-0 break-words font-display text-lg font-semibold leading-snug text-white">
+                        {s.handle}
+                      </span>
                       {isLink && (
-                        <span className="text-magenta-glow opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="shrink-0 text-magenta-glow opacity-0 transition-opacity group-hover:opacity-100">
                           ↗
                         </span>
                       )}

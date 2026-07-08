@@ -20,7 +20,7 @@ export default function Process() {
               data-reveal
               className="group relative overflow-hidden rounded-3xl glass p-7 transition-transform duration-500 hover:-translate-y-1.5"
             >
-              <span className="font-display text-6xl font-bold text-white/10 transition-colors group-hover:text-magenta-core/30">
+              <span className="inline-block font-display text-6xl font-bold text-violet-glow/85 transition-all duration-500 ease-out group-hover:-rotate-3 group-hover:scale-110 group-hover:text-magenta-glow group-hover:drop-shadow-[0_0_26px_rgba(255,77,240,0.65)]">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3 className="mt-4 font-display text-xl font-bold">{p.title}</h3>

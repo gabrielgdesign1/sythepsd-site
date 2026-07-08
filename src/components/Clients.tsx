@@ -81,7 +81,7 @@ export default function Clients() {
   );
 
   return (
-    <section id="clients" className="relative py-24 md:py-32">
+    <section id="clients" className="relative pb-24 md:pb-32">
       {/* Marquee band */}
       <div className="relative flex select-none overflow-hidden border-y border-white/10 bg-ink-900 py-6">
         {[0, 1].map((k) => (
