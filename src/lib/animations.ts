@@ -5,23 +5,16 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 export function initSmoothScroll() {
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduced) return () => {};
-
   const lenis = new Lenis({
-    duration: 1.1,
+    duration: 1.15,
     easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
   });
 
   lenis.on("scroll", ScrollTrigger.update);
-
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-  });
+  gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
 
-  // Anchor links -> lenis scroll
   const onClick = (e: MouseEvent) => {
     const target = (e.target as HTMLElement)?.closest("a[href^='#']");
     if (!target) return;
@@ -42,14 +35,6 @@ export function initSmoothScroll() {
 }
 
 export function initReveals() {
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const items = gsap.utils.toArray<HTMLElement>("[data-reveal]");
-
-  if (reduced) {
-    items.forEach((el) => gsap.set(el, { opacity: 1, y: 0 }));
-    return;
-  }
-
   ScrollTrigger.batch("[data-reveal]", {
     start: "top 88%",
     onEnter: (batch) =>
@@ -63,7 +48,7 @@ export function initReveals() {
       }),
   });
 
-  // Heading reveal — headline rises with a subtle 3D tilt
+  // Heading reveal — rises with a subtle 3D tilt
   gsap.utils.toArray<HTMLElement>(".reveal-heading").forEach((h) => {
     gsap.from(h, {
       y: 40,
@@ -80,8 +65,7 @@ export function initReveals() {
 
 /** Magnetic hover on primary buttons — they lean toward the cursor. */
 export function initMagnetic() {
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduced || window.matchMedia("(pointer: coarse)").matches) return () => {};
+  if (window.matchMedia("(pointer: coarse)").matches) return () => {};
 
   const buttons = Array.from(document.querySelectorAll<HTMLElement>(".btn-primary"));
   const cleanups: Array<() => void> = [];

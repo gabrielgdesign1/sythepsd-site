@@ -2,10 +2,10 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 /**
- * A purple "laboratory liquid" blob: a high-detail icosahedron displaced by
- * simplex noise in the vertex shader, with a fresnel rim glow and an
- * orbiting particle field. Reacts to mouse + scroll. Degrades gracefully
- * on mobile and honors prefers-reduced-motion.
+ * Fixed full-viewport "laboratory liquid" background. A noise-displaced blob
+ * weaves across the screen as the user scrolls (so it travels through the whole
+ * site), surrounded by a drifting, parallaxing starfield. Always animated;
+ * only quality/quantity scales down on mobile.
  */
 
 const vertexShader = /* glsl */ `
@@ -17,7 +17,6 @@ varying vec3 vNormal;
 varying vec3 vViewPosition;
 varying float vDisp;
 
-// --- Ashima simplex noise (snoise) ---
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x,289.0);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
 float snoise(vec3 v){
@@ -65,13 +64,12 @@ float snoise(vec3 v){
 
 void main(){
   vNormal = normalize(normalMatrix * normal);
-  float t = uTime * 0.35;
-  // Higher-frequency ripples ramp up as the user scrolls -> the shape morphs.
-  float freq = 1.3 + uScroll * 1.6;
+  float t = uTime * 0.4;
+  float freq = 1.25 + uScroll * 1.4;
   float n = snoise(normal * freq + t);
-  n += 0.5 * snoise(normal * (2.6 + uScroll * 2.0) - t * 1.4);
-  float mouseInfluence = 0.35 * snoise(normal * 2.0 + uMouse * 2.0);
-  float disp = (n + mouseInfluence) * (uAmp + uScroll * 0.5);
+  n += 0.5 * snoise(normal * (2.6 + uScroll * 1.6) - t * 1.3);
+  float mouseInfluence = 0.4 * snoise(normal * 2.0 + uMouse * 2.0);
+  float disp = (n + mouseInfluence) * (uAmp + uScroll * 0.35);
   vDisp = disp;
   vec3 newPos = position + normal * disp;
   vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
@@ -83,29 +81,43 @@ void main(){
 const fragmentShader = /* glsl */ `
 uniform float uTime;
 uniform float uScroll;
+uniform float uHue;
 varying vec3 vNormal;
 varying vec3 vViewPosition;
 varying float vDisp;
 
 void main(){
   vec3 viewDir = normalize(vViewPosition);
-  float fresnel = pow(1.0 - max(dot(normalize(vNormal), viewDir), 0.0), 2.4);
+  float fresnel = pow(1.0 - max(dot(normalize(vNormal), viewDir), 0.0), 2.2);
 
-  vec3 deep   = vec3(0.16, 0.03, 0.32);   // deep violet core
-  vec3 violet = vec3(0.54, 0.18, 0.90);   // core violet
-  vec3 magenta= vec3(1.00, 0.30, 0.94);   // magenta glow
-  vec3 spark  = vec3(0.79, 1.00, 0.24);   // faint toxic-lime lab spark
+  vec3 deep   = vec3(0.14, 0.02, 0.30);
+  vec3 violet = vec3(0.52, 0.16, 0.90);
+  vec3 magenta= vec3(1.00, 0.28, 0.94);
+  vec3 spark  = vec3(0.79, 1.00, 0.24);
 
   float mixv = smoothstep(-0.4, 0.6, vDisp);
   vec3 base = mix(deep, violet, mixv);
-  // Scroll pushes the whole blob hotter toward magenta.
-  base = mix(base, magenta, clamp(fresnel + uScroll * 0.5, 0.0, 1.0));
-  base += spark * pow(fresnel, 5.0) * 0.25;
-  base += violet * (0.15 + 0.1 * sin(uTime + vDisp * 6.0));
+  base = mix(base, magenta, clamp(fresnel + uHue * 0.4, 0.0, 1.0));
+  base += spark * pow(fresnel, 5.0) * 0.22;
+  base += violet * (0.12 + 0.10 * sin(uTime + vDisp * 6.0));
 
   gl_FragColor = vec4(base, 1.0);
 }
 `;
+
+function makeStarTexture() {
+  const c = document.createElement("canvas");
+  c.width = c.height = 64;
+  const ctx = c.getContext("2d")!;
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, "rgba(255,255,255,1)");
+  g.addColorStop(0.25, "rgba(226,200,255,0.9)");
+  g.addColorStop(1, "rgba(168,85,247,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 64, 64);
+  const tex = new THREE.CanvasTexture(c);
+  return tex;
+}
 
 export default function LiquidScene() {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -113,18 +125,11 @@ export default function LiquidScene() {
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isMobile = window.innerWidth < 768;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      mount.clientWidth / mount.clientHeight,
-      0.1,
-      100
-    );
-    camera.position.z = 5.7;
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.z = 7;
 
     const renderer = new THREE.WebGLRenderer({
       antialias: !isMobile,
@@ -132,28 +137,24 @@ export default function LiquidScene() {
       powerPreference: "high-performance",
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
-    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     mount.appendChild(renderer.domElement);
 
     // Blob
-    const detail = isMobile ? 24 : 48;
-    const geometry = new THREE.IcosahedronGeometry(1.35, detail);
+    const detail = isMobile ? 20 : 44;
+    const geometry = new THREE.IcosahedronGeometry(1.25, detail);
     const uniforms = {
       uTime: { value: 0 },
-      uAmp: { value: 0.42 },
+      uAmp: { value: 0.44 },
       uScroll: { value: 0 },
+      uHue: { value: 0 },
       uMouse: { value: new THREE.Vector3() },
     };
-    const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms,
-    });
+    const material = new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms });
     const blob = new THREE.Mesh(geometry, material);
     scene.add(blob);
 
-    // Inner glow core
-    const glowGeo = new THREE.SphereGeometry(1.1, 32, 32);
+    const glowGeo = new THREE.SphereGeometry(1.0, 32, 32);
     const glowMat = new THREE.MeshBasicMaterial({
       color: new THREE.Color("#e935c1"),
       transparent: true,
@@ -162,29 +163,32 @@ export default function LiquidScene() {
     const glow = new THREE.Mesh(glowGeo, glowMat);
     scene.add(glow);
 
-    // Particle field
-    const pCount = isMobile ? 350 : 900;
-    const positions = new Float32Array(pCount * 3);
-    for (let i = 0; i < pCount; i++) {
-      const r = 2.4 + Math.random() * 3.2;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = r * Math.cos(phi);
-    }
-    const pGeo = new THREE.BufferGeometry();
-    pGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    const pMat = new THREE.PointsMaterial({
-      color: new THREE.Color("#c084fc"),
-      size: 0.028,
-      transparent: true,
-      opacity: 0.7,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    });
-    const particles = new THREE.Points(pGeo, pMat);
-    scene.add(particles);
+    // Starfield (drifting, parallaxing)
+    const starTex = makeStarTexture();
+    const makeStars = (count: number, spread: number, size: number, color: string, opacity: number) => {
+      const pos = new Float32Array(count * 3);
+      for (let i = 0; i < count; i++) {
+        pos[i * 3] = (Math.random() - 0.5) * spread;
+        pos[i * 3 + 1] = (Math.random() - 0.5) * spread;
+        pos[i * 3 + 2] = (Math.random() - 0.5) * spread * 0.6 - 3;
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+      const m = new THREE.PointsMaterial({
+        size,
+        map: starTex,
+        color: new THREE.Color(color),
+        transparent: true,
+        opacity,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        sizeAttenuation: true,
+      });
+      return new THREE.Points(g, m);
+    };
+    const starsFar = makeStars(isMobile ? 240 : 520, 26, 0.10, "#b892ff", 0.65);
+    const starsNear = makeStars(isMobile ? 120 : 260, 18, 0.16, "#ff9bf0", 0.8);
+    scene.add(starsFar, starsNear);
 
     // Interaction state
     const mouse = { x: 0, y: 0 };
@@ -196,48 +200,56 @@ export default function LiquidScene() {
       targetMouse.y = -((e.clientY / window.innerHeight) * 2 - 1);
     };
     const onScroll = () => {
-      const max = window.innerHeight * 1.5;
-      scrollN = Math.min(window.scrollY / max, 1);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      scrollN = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
     };
+    onScroll();
     window.addEventListener("pointermove", onPointer, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
 
     const onResize = () => {
-      if (!mount) return;
-      camera.aspect = mount.clientWidth / mount.clientHeight;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(mount.clientWidth, mount.clientHeight);
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener("resize", onResize);
 
     const clock = new THREE.Clock();
     let raf = 0;
+    let smoothScroll = scrollN;
 
     const render = () => {
       const t = clock.getElapsedTime();
       mouse.x += (targetMouse.x - mouse.x) * 0.05;
       mouse.y += (targetMouse.y - mouse.y) * 0.05;
+      smoothScroll += (scrollN - smoothScroll) * 0.07;
+      const p = smoothScroll;
 
-      if (!reduced) {
-        uniforms.uTime.value = t;
-        uniforms.uScroll.value += (scrollN - uniforms.uScroll.value) * 0.08;
-        uniforms.uMouse.value.set(mouse.x, mouse.y, Math.sin(t * 0.2));
-        blob.rotation.y = t * 0.12 + mouse.x * 0.4 + scrollN * 1.4;
-        blob.rotation.x = mouse.y * 0.3 + scrollN * 0.9;
-        blob.position.y = scrollN * -0.6;
-        glow.position.copy(blob.position);
-        const s = 1 - scrollN * 0.25;
-        blob.scale.setScalar(s);
-        glow.scale.setScalar(s);
-        glow.material.opacity = 0.14 + scrollN * 0.12;
-        particles.rotation.y = t * 0.03 + scrollN * 0.8;
-        particles.rotation.x = mouse.y * 0.1;
-        particles.scale.setScalar(1 + scrollN * 0.25);
-        camera.position.x += (mouse.x * 0.4 - camera.position.x) * 0.05;
-        camera.lookAt(0, blob.position.y, 0);
-      } else {
-        uniforms.uTime.value = 0.5;
-      }
+      uniforms.uTime.value = t;
+      uniforms.uScroll.value = p;
+      uniforms.uHue.value = p;
+      uniforms.uMouse.value.set(mouse.x, mouse.y, Math.sin(t * 0.2));
+
+      // Weaving path across the viewport as you scroll -> travels through the site
+      const weaveX = Math.sin(p * Math.PI * 3.0) * 2.4;
+      const weaveY = Math.cos(p * Math.PI * 2.0) * 0.5 - p * 0.3;
+      blob.position.x += (weaveX + mouse.x * 0.5 - blob.position.x) * 0.06;
+      blob.position.y += (weaveY + mouse.y * 0.3 - blob.position.y) * 0.06;
+      blob.rotation.y = t * 0.16 + p * 3.0;
+      blob.rotation.x = t * 0.05 + p * 1.2;
+      const s = 1 + Math.sin(p * Math.PI) * 0.12;
+      blob.scale.setScalar(s);
+      glow.position.copy(blob.position);
+      glow.scale.setScalar(s * 1.05);
+      glowMat.opacity = 0.12 + p * 0.12;
+
+      // Star drift + scroll parallax
+      starsFar.rotation.z = t * 0.01;
+      starsFar.position.y = p * 3.2;
+      starsFar.position.x = -mouse.x * 0.4;
+      starsNear.rotation.z = -t * 0.016;
+      starsNear.position.y = p * 6.0;
+      starsNear.position.x = -mouse.x * 0.9;
 
       renderer.render(scene, camera);
       raf = requestAnimationFrame(render);
@@ -253,8 +265,11 @@ export default function LiquidScene() {
       material.dispose();
       glowGeo.dispose();
       glowMat.dispose();
-      pGeo.dispose();
-      pMat.dispose();
+      starsFar.geometry.dispose();
+      (starsFar.material as THREE.Material).dispose();
+      starsNear.geometry.dispose();
+      (starsNear.material as THREE.Material).dispose();
+      starTex.dispose();
       renderer.dispose();
       if (renderer.domElement.parentNode === mount) {
         mount.removeChild(renderer.domElement);

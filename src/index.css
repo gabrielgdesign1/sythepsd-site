@@ -170,22 +170,16 @@ html.lenis body {
   z-index: 70;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-reveal] {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .animate-marquee,
-  .animate-floaty,
-  .animate-orbit,
-  .animate-orbit-reverse,
-  .animate-aurora {
-    animation: none !important;
-  }
-  .client-detail,
-  .client-center {
-    opacity: 1 !important;
-    animation: none !important;
-    transform: none !important;
-  }
+/* Fallback: if JS hasn't wired reveals yet, never leave content invisible. */
+.no-js [data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Keep content text legible wherever the traveling blob passes behind it. */
+main :where(h2, h3, p, li) {
+  text-shadow: 0 1px 14px rgba(5, 3, 16, 0.55);
+}
+.text-gradient {
+  text-shadow: none;
 }

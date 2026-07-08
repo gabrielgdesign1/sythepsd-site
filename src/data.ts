@@ -7,30 +7,27 @@ export type Work = {
 export const BEHANCE_URL = "https://www.behance.net/sythepsd";
 
 export const clients = [
-  {
-    name: "oCmz",
-    subs: "8.76M",
-    handle: "@iiocmz",
-    img: "/clients/ocmz.webp",
-    url: "https://www.youtube.com/iiocmz",
-    tag: "Fortnite",
-  },
-  {
-    name: "Clix",
-    subs: "3.31M",
-    handle: "@Clix",
-    img: "/clients/clix.webp",
-    url: "https://www.youtube.com/@Clix",
-    tag: "Fortnite",
-  },
-  {
-    name: "ThomasHD",
-    subs: "147K",
-    handle: "@Th0masHD",
-    img: "/clients/thomashd.webp",
-    url: "https://www.youtube.com/@Th0masHD",
-    tag: "Gaming",
-  },
+  { name: "oCmz", subs: "8.76M", handle: "@iiocmz", img: "/clients/ocmz.webp", url: "https://www.youtube.com/iiocmz" },
+  { name: "Clix", subs: "3.31M", handle: "@Clix", img: "/clients/clix.webp", url: "https://www.youtube.com/@Clix" },
+  { name: "Mitzuu", subs: "1.95M", handle: "@mitzuuyt", img: "/clients/mitzuu.webp", url: "https://www.youtube.com/@mitzuuyt" },
+  { name: "Maxsialtele", subs: "1.03M", handle: "@maxsialtele", img: "/clients/maxsialtele.webp", url: "https://www.youtube.com/@maxsialtele" },
+  { name: "Amar", subs: "640K", handle: "@AmarOfficial", img: "/clients/amar.webp", url: "https://www.youtube.com/@AmarOfficial" },
+  { name: "Peterbot", subs: "609K", handle: "@PeterbotFN", img: "/clients/peterbot.webp", url: "https://www.youtube.com/@PeterbotFN" },
+  { name: "Letshe", subs: "597K", handle: "@g2letshe", img: "/clients/letshe.webp", url: "https://www.youtube.com/@g2letshe" },
+  { name: "LolliFN", subs: "592K", handle: "@LolliFN", img: "/clients/lollifn.webp", url: "https://www.youtube.com/@LolliFN" },
+  { name: "Highman", subs: "500K", handle: "@highman", img: "/clients/highman.webp", url: "https://www.youtube.com/@highman" },
+  { name: "Paul2M", subs: "495K", handle: "@Paul2m", img: "/clients/paul2m.webp", url: "https://www.youtube.com/@Paul2m" },
+  { name: "Reet", subs: "465K", handle: "@Reetlol", img: "/clients/reet.webp", url: "https://www.youtube.com/@Reetlol" },
+  { name: "Rubix", subs: "388K", handle: "@Rubixfnr", img: "/clients/rubix.webp", url: "https://www.youtube.com/@Rubixfnr" },
+  { name: "Wolfiez", subs: "370K", handle: "@Wolfiez", img: "/clients/wolfiez.webp", url: "https://www.youtube.com/@Wolfiez" },
+  { name: "Setty", subs: "330K", handle: "@setty2k", img: "/clients/setty.webp", url: "https://www.youtube.com/@setty2k" },
+  { name: "ZyzTM", subs: "308K", handle: "@Zyztm", img: "/clients/zyztm.webp", url: "https://www.youtube.com/@Zyztm" },
+  { name: "Hardfind", subs: "295K", handle: "@Hardfinddd", img: "/clients/hardfind.webp", url: "https://www.youtube.com/@Hardfinddd" },
+  { name: "Malibuca", subs: "173K", handle: "@MalibucaFN", img: "/clients/malibuca.webp", url: "https://www.youtube.com/@MalibucaFN" },
+  { name: "DestinyJesus", subs: "155K", handle: "@DestinysJesus", img: "/clients/destinyjesus.webp", url: "https://www.youtube.com/@DestinysJesus" },
+  { name: "Merstach", subs: "151K", handle: "@Merstach", img: "/clients/merstach.webp", url: "https://www.youtube.com/@Merstach" },
+  { name: "ThomasHD", subs: "147K", handle: "@Th0masHD", img: "/clients/thomashd.webp", url: "https://www.youtube.com/@Th0masHD" },
+  { name: "Oatley", subs: "108K", handle: "@Oatleyfn", img: "/clients/oatley.webp", url: "https://www.youtube.com/@Oatleyfn" },
 ];
 
 // One unified "Selected Work" set — gaming + IRL combined, interleaved.

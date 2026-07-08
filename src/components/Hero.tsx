@@ -1,36 +1,29 @@
 import { useEffect, useRef } from "react";
-import LiquidScene from "../three/LiquidScene";
 import { gsap, ScrollTrigger } from "../lib/animations";
 
 export default function Hero() {
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const ctx = gsap.context(() => {
-      if (!reduced) {
-        const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
-        tl.from(".hero-word", { yPercent: 120, opacity: 0, duration: 1.1, stagger: 0.09 }, 0.2)
-          .from(".hero-sub", { y: 24, opacity: 0, duration: 0.9 }, "-=0.6")
-          .from(".hero-cta", { y: 20, opacity: 0, duration: 0.8, stagger: 0.1 }, "-=0.5")
-          .from(".hero-badge", { scale: 0.8, opacity: 0, duration: 0.7, stagger: 0.12 }, "-=0.6")
-          .from(".hero-scroll", { opacity: 0, duration: 0.6 }, "-=0.3");
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+      tl.from(".hero-word", { yPercent: 120, opacity: 0, duration: 1.1, stagger: 0.09 }, 0.2)
+        .from(".hero-sub", { y: 24, opacity: 0, duration: 0.9 }, "-=0.6")
+        .from(".hero-cta", { y: 20, opacity: 0, duration: 0.8, stagger: 0.1 }, "-=0.5")
+        .from(".hero-badge", { scale: 0.8, opacity: 0, duration: 0.7, stagger: 0.12 }, "-=0.6")
+        .from(".hero-scroll", { opacity: 0, duration: 0.6 }, "-=0.3");
 
-        // Scroll parallax
-        gsap.to(".hero-title", {
-          yPercent: -18,
-          opacity: 0.15,
-          ease: "none",
-          scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true },
-        });
-        gsap.to(".hero-badges", {
-          yPercent: -60,
-          ease: "none",
-          scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true },
-        });
-      } else {
-        gsap.set(".hero-word, .hero-sub, .hero-cta, .hero-badge, .hero-scroll", { opacity: 1, y: 0 });
-      }
+      gsap.to(".hero-title", {
+        yPercent: -20,
+        opacity: 0.1,
+        ease: "none",
+        scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true },
+      });
+      gsap.to(".hero-badges", {
+        yPercent: -70,
+        ease: "none",
+        scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true },
+      });
     }, root);
 
     ScrollTrigger.refresh();
@@ -43,19 +36,13 @@ export default function Hero() {
       ref={root}
       className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden pt-24"
     >
-      {/* 3D scene */}
-      <div className="absolute inset-0">
-        <LiquidScene />
-      </div>
-
-      {/* Ambient gradients + legibility vignette */}
+      {/* Subtle legibility scrim — keeps the blob glowing through */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/2 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-core/20 blur-[120px]" />
         <div
-          className="absolute left-1/2 top-1/2 h-[60vh] w-[80vw] -translate-x-1/2 -translate-y-1/2"
+          className="absolute left-1/2 top-1/2 h-[70vh] w-[92vw] -translate-x-1/2 -translate-y-1/2"
           style={{
             background:
-              "radial-gradient(closest-side, rgba(5,3,16,0.72), rgba(5,3,16,0.35) 55%, transparent 78%)",
+              "radial-gradient(closest-side, rgba(5,3,16,0.42), rgba(5,3,16,0.14) 55%, transparent 78%)",
           }}
         />
         <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-ink-900 to-transparent" />
@@ -68,8 +55,8 @@ export default function Hero() {
             <p className="text-xs text-haze">Years of experience</p>
           </div>
           <div className="hero-badge glass pointer-events-auto mr-2 mt-10 rounded-2xl px-4 py-3 animate-floaty">
-            <p className="text-2xl font-bold font-display">12M+</p>
-            <p className="text-xs text-haze">Combined audience reach</p>
+            <p className="text-2xl font-bold font-display">21</p>
+            <p className="text-xs text-haze">Creators worked with</p>
           </div>
         </div>
 
@@ -86,10 +73,19 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="hero-sub mx-auto mt-6 max-w-xl text-balance text-lg text-haze md:text-xl">
-            Thumbnails, banners and 3D graphics that make people stop scrolling — built for
-            Fortnite creators and beyond.
-          </p>
+          <div className="hero-sub mx-auto mt-7 max-w-xl">
+            <p
+              className="rounded-2xl px-5 py-3 text-lg text-white md:text-xl"
+              style={{
+                background: "rgba(8,5,20,0.55)",
+                backdropFilter: "blur(6px)",
+                boxShadow: "0 8px 40px -12px rgba(0,0,0,0.8)",
+              }}
+            >
+              Thumbnails, banners and 3D graphics that make people stop scrolling — built for
+              Fortnite creators and beyond.
+            </p>
+          </div>
 
           <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
             <a href="#work" className="hero-cta btn-primary">

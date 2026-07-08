@@ -7,6 +7,7 @@ import About from "./components/About";
 import Process from "./components/Process";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import LiquidScene from "./three/LiquidScene";
 import {
   initReveals,
   initSmoothScroll,
@@ -35,8 +36,8 @@ export default function App() {
       <div className="scroll-progress" />
       <div className="grain" />
 
-      {/* Global animated aurora backdrop */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      {/* Animated aurora backdrop */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="aurora-blob animate-aurora left-[-8%] top-[8%] h-[46vh] w-[46vh] bg-violet-deep/25" />
         <div
           className="aurora-blob animate-aurora bottom-[6%] right-[-8%] h-[52vh] w-[52vh] bg-magenta-core/20"
@@ -48,16 +49,24 @@ export default function App() {
         />
       </div>
 
-      <Nav />
-      <main>
-        <Hero />
-        <Clients />
-        <Portfolio />
-        <About />
-        <Process />
-        <Contact />
-      </main>
-      <Footer />
+      {/* Fixed 3D scene — blob weaves across the page as you scroll */}
+      <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.78]">
+        <LiquidScene />
+      </div>
+
+      {/* Content sits above the 3D layer */}
+      <div className="relative z-10">
+        <Nav />
+        <main>
+          <Hero />
+          <Clients />
+          <Portfolio />
+          <About />
+          <Process />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }
