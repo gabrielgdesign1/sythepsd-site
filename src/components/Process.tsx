@@ -2,10 +2,10 @@ import { process } from "../data";
 
 export default function Process() {
   return (
-    <section className="relative py-24 md:py-32">
+    <section id="process" className="relative py-24 md:py-32">
       <div className="container-x">
         <div className="mb-14 max-w-2xl" data-reveal>
-          <h2 className="font-display text-4xl font-bold tracking-tightest md:text-6xl">
+          <h2 className="reveal-heading font-display text-4xl font-bold tracking-tightest md:text-6xl">
             How it <span className="text-gradient">works</span>
           </h2>
           <p className="mt-4 text-lg text-haze">

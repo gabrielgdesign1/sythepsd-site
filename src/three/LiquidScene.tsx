@@ -11,6 +11,7 @@ import * as THREE from "three";
 const vertexShader = /* glsl */ `
 uniform float uTime;
 uniform float uAmp;
+uniform float uScroll;
 uniform vec3 uMouse;
 varying vec3 vNormal;
 varying vec3 vViewPosition;
@@ -65,10 +66,12 @@ float snoise(vec3 v){
 void main(){
   vNormal = normalize(normalMatrix * normal);
   float t = uTime * 0.35;
-  float n = snoise(normal * 1.3 + t);
-  n += 0.5 * snoise(normal * 2.6 - t * 1.4);
+  // Higher-frequency ripples ramp up as the user scrolls -> the shape morphs.
+  float freq = 1.3 + uScroll * 1.6;
+  float n = snoise(normal * freq + t);
+  n += 0.5 * snoise(normal * (2.6 + uScroll * 2.0) - t * 1.4);
   float mouseInfluence = 0.35 * snoise(normal * 2.0 + uMouse * 2.0);
-  float disp = (n + mouseInfluence) * uAmp;
+  float disp = (n + mouseInfluence) * (uAmp + uScroll * 0.5);
   vDisp = disp;
   vec3 newPos = position + normal * disp;
   vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
@@ -79,6 +82,7 @@ void main(){
 
 const fragmentShader = /* glsl */ `
 uniform float uTime;
+uniform float uScroll;
 varying vec3 vNormal;
 varying vec3 vViewPosition;
 varying float vDisp;
@@ -94,7 +98,8 @@ void main(){
 
   float mixv = smoothstep(-0.4, 0.6, vDisp);
   vec3 base = mix(deep, violet, mixv);
-  base = mix(base, magenta, fresnel);
+  // Scroll pushes the whole blob hotter toward magenta.
+  base = mix(base, magenta, clamp(fresnel + uScroll * 0.5, 0.0, 1.0));
   base += spark * pow(fresnel, 5.0) * 0.25;
   base += violet * (0.15 + 0.1 * sin(uTime + vDisp * 6.0));
 
@@ -136,6 +141,7 @@ export default function LiquidScene() {
     const uniforms = {
       uTime: { value: 0 },
       uAmp: { value: 0.42 },
+      uScroll: { value: 0 },
       uMouse: { value: new THREE.Vector3() },
     };
     const material = new THREE.ShaderMaterial({
@@ -214,16 +220,19 @@ export default function LiquidScene() {
 
       if (!reduced) {
         uniforms.uTime.value = t;
+        uniforms.uScroll.value += (scrollN - uniforms.uScroll.value) * 0.08;
         uniforms.uMouse.value.set(mouse.x, mouse.y, Math.sin(t * 0.2));
-        blob.rotation.y = t * 0.12 + mouse.x * 0.4;
-        blob.rotation.x = mouse.y * 0.3 + scrollN * 0.6;
+        blob.rotation.y = t * 0.12 + mouse.x * 0.4 + scrollN * 1.4;
+        blob.rotation.x = mouse.y * 0.3 + scrollN * 0.9;
         blob.position.y = scrollN * -0.6;
         glow.position.copy(blob.position);
         const s = 1 - scrollN * 0.25;
         blob.scale.setScalar(s);
         glow.scale.setScalar(s);
-        particles.rotation.y = t * 0.03;
+        glow.material.opacity = 0.14 + scrollN * 0.12;
+        particles.rotation.y = t * 0.03 + scrollN * 0.8;
         particles.rotation.x = mouse.y * 0.1;
+        particles.scale.setScalar(1 + scrollN * 0.25);
         camera.position.x += (mouse.x * 0.4 - camera.position.x) * 0.05;
         camera.lookAt(0, blob.position.y, 0);
       } else {

@@ -38,10 +38,26 @@ export default {
           "0%,100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-12px)" },
         },
+        orbit: {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+        orbitReverse: {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(-360deg)" },
+        },
+        auroraShift: {
+          "0%,100%": { transform: "translate3d(0,0,0) scale(1)" },
+          "33%": { transform: "translate3d(6%,-4%,0) scale(1.15)" },
+          "66%": { transform: "translate3d(-5%,5%,0) scale(0.95)" },
+        },
       },
       animation: {
         marquee: "marquee 32s linear infinite",
         floaty: "floaty 6s ease-in-out infinite",
+        orbit: "orbit 44s linear infinite",
+        "orbit-reverse": "orbitReverse 44s linear infinite",
+        aurora: "auroraShift 26s ease-in-out infinite",
       },
     },
   },

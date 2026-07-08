@@ -63,7 +63,57 @@ export function initReveals() {
       }),
   });
 
+  // Heading reveal — headline rises with a subtle 3D tilt
+  gsap.utils.toArray<HTMLElement>(".reveal-heading").forEach((h) => {
+    gsap.from(h, {
+      y: 40,
+      rotateX: -35,
+      transformPerspective: 700,
+      duration: 1,
+      ease: "power4.out",
+      scrollTrigger: { trigger: h, start: "top 92%" },
+    });
+  });
+
   ScrollTrigger.refresh();
+}
+
+/** Magnetic hover on primary buttons — they lean toward the cursor. */
+export function initMagnetic() {
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced || window.matchMedia("(pointer: coarse)").matches) return () => {};
+
+  const buttons = Array.from(document.querySelectorAll<HTMLElement>(".btn-primary"));
+  const cleanups: Array<() => void> = [];
+
+  buttons.forEach((btn) => {
+    const onMove = (e: MouseEvent) => {
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - (r.left + r.width / 2);
+      const y = e.clientY - (r.top + r.height / 2);
+      gsap.to(btn, { x: x * 0.3, y: y * 0.4, duration: 0.5, ease: "power3.out" });
+    };
+    const onLeave = () => gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1,0.4)" });
+    btn.addEventListener("mousemove", onMove);
+    btn.addEventListener("mouseleave", onLeave);
+    cleanups.push(() => {
+      btn.removeEventListener("mousemove", onMove);
+      btn.removeEventListener("mouseleave", onLeave);
+    });
+  });
+
+  return () => cleanups.forEach((fn) => fn());
+}
+
+/** Thin top progress bar reflecting page scroll. */
+export function initScrollProgress() {
+  const bar = document.querySelector<HTMLElement>(".scroll-progress");
+  if (!bar) return;
+  gsap.to(bar, {
+    scaleX: 1,
+    ease: "none",
+    scrollTrigger: { start: 0, end: "max", scrub: 0.3 },
+  });
 }
 
 export { gsap, ScrollTrigger };
