@@ -6,7 +6,9 @@ export default function Hero() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+      const tl = gsap.timeline({
+        defaults: { ease: "power4.out", clearProps: "transform,opacity" },
+      });
       tl.from(".hero-word", { yPercent: 120, opacity: 0, duration: 1.1, stagger: 0.09 }, 0.2)
         .from(".hero-sub", { y: 24, opacity: 0, duration: 0.9 }, "-=0.6")
         .from(".hero-cta", { y: 20, opacity: 0, duration: 0.8, stagger: 0.1 }, "-=0.5")
@@ -45,7 +47,7 @@ export default function Hero() {
               "radial-gradient(closest-side, rgba(5,3,16,0.42), rgba(5,3,16,0.14) 55%, transparent 78%)",
           }}
         />
-        <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-ink-900 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-[46vh] bg-gradient-to-t from-ink-900 via-ink-900/80 to-transparent" />
       </div>
 
       <div className="container-x relative z-10">

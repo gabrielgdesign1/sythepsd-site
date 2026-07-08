@@ -83,7 +83,7 @@ export default function Clients() {
   return (
     <section id="clients" className="relative py-24 md:py-32">
       {/* Marquee band */}
-      <div className="relative flex select-none overflow-hidden border-y border-white/10 bg-ink-900/40 py-6 backdrop-blur-sm">
+      <div className="relative flex select-none overflow-hidden border-y border-white/10 bg-ink-900 py-6">
         {[0, 1].map((k) => (
           <div
             key={k}
@@ -92,7 +92,7 @@ export default function Clients() {
           >
             {[...marqueeItems, ...marqueeItems].map((t, i) => (
               <span key={i} className="flex items-center gap-10">
-                <span className="font-display text-2xl font-semibold text-white/70 md:text-3xl">{t}</span>
+                <span className="font-display text-2xl font-semibold text-white md:text-3xl">{t}</span>
                 <span className="h-2 w-2 rounded-full bg-magenta-core" />
               </span>
             ))}

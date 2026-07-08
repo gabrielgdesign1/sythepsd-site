@@ -28,6 +28,7 @@ export default function Portfolio() {
           opacity: 0,
           duration: 0.9,
           ease: "power3.out",
+          clearProps: "transform,opacity",
           scrollTrigger: { trigger: tile, start: "top 92%" },
         });
         const img = tile.querySelector("img");
@@ -64,13 +65,11 @@ export default function Portfolio() {
           ref={grid}
           className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {works.map((w, i) => (
+          {works.map((w) => (
             <button
               key={w.src}
               onClick={() => setActive(w)}
-              className={`work-tile group relative overflow-hidden rounded-2xl border border-white/10 bg-ink-700 text-left ${
-                i === 0 ? "sm:col-span-2 lg:col-span-2" : ""
-              }`}
+              className="work-tile group relative overflow-hidden rounded-2xl border border-white/10 bg-ink-700 text-left"
             >
               <div className="aspect-video overflow-hidden">
                 <img
@@ -87,9 +86,6 @@ export default function Portfolio() {
                   ↗
                 </span>
               </div>
-              <span className="absolute left-4 top-4 rounded-full glass px-3 py-1 text-[11px] uppercase tracking-widest text-white/80">
-                {w.category === "gaming" ? "Fortnite" : "IRL"}
-              </span>
             </button>
           ))}
         </div>

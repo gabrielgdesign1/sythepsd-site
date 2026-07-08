@@ -72,12 +72,12 @@ html.lenis body {
     border: 1px solid rgba(168, 85, 247, 0.16);
   }
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 font-medium tracking-tight text-white transition-transform duration-300 will-change-transform;
+    @apply relative inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-7 py-3.5 font-medium leading-none tracking-tight text-white transition-transform duration-300 will-change-transform;
     background: linear-gradient(120deg, #8b2fe6, #e935c1);
     box-shadow: 0 10px 40px -8px rgba(233, 53, 193, 0.55);
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-7 py-3.5 font-medium tracking-tight text-white/90 transition-colors duration-300;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-7 py-3.5 font-medium leading-none tracking-tight text-white transition-colors duration-300;
   }
 }
 
@@ -177,8 +177,9 @@ html.lenis body {
 }
 
 /* Keep content text legible wherever the traveling blob passes behind it. */
-main :where(h2, h3, p, li) {
-  text-shadow: 0 1px 14px rgba(5, 3, 16, 0.55);
+main :where(h1, h2, h3, p, li, span, a),
+header :where(a, span) {
+  text-shadow: 0 2px 18px rgba(5, 3, 16, 0.75), 0 1px 3px rgba(5, 3, 16, 0.9);
 }
 .text-gradient {
   text-shadow: none;

@@ -20,7 +20,7 @@ export default {
           core: "#e935c1",
         },
         toxic: "#c9ff3d",
-        haze: "#b9b2d0",
+        haze: "#f5f3ff",
       },
       fontFamily: {
         display: ['"Bricolage Grotesque"', "system-ui", "sans-serif"],
