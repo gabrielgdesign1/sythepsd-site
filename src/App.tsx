@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 import Clients from "./components/Clients";
@@ -19,6 +19,16 @@ import {
 } from "./lib/animations";
 
 export default function App() {
+  // Delay requesting the WebGL chunk by a tick so it doesn't compete with
+  // fonts/CSS/hero content for bandwidth on a cold, high-latency connection.
+  const [showScene, setShowScene] = useState(false);
+  useEffect(() => {
+    const ric = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 120));
+    const cancel = window.cancelIdleCallback ?? window.clearTimeout;
+    const id = ric(() => setShowScene(true));
+    return () => cancel(id as number);
+  }, []);
+
   useEffect(() => {
     const cleanupScroll = initSmoothScroll();
     let cleanupMagnetic = () => {};
@@ -54,9 +64,11 @@ export default function App() {
 
       {/* Fixed 3D scene — blob weaves across the page as you scroll */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.78]">
-        <Suspense fallback={null}>
-          <LiquidScene />
-        </Suspense>
+        {showScene && (
+          <Suspense fallback={null}>
+            <LiquidScene />
+          </Suspense>
+        )}
       </div>
 
       {/* Content sits above the 3D layer */}

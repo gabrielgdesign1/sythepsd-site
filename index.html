@@ -18,12 +18,10 @@
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/logo.webp" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-    />
+    <!-- Self-hosted (no Google Fonts round-trip): saves 2 extra origins + a
+         CSS-then-font fetch chain on every cold visit. -->
+    <link rel="preload" href="/fonts/lilita-one-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/space-grotesk-var.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <div id="root"></div>
