@@ -23,7 +23,7 @@ export default {
         haze: "#f5f3ff",
       },
       fontFamily: {
-        display: ['"Bricolage Grotesque"', "system-ui", "sans-serif"],
+        display: ['"Lilita One"', "system-ui", "sans-serif"],
         sans: ['"Space Grotesk"', "system-ui", "sans-serif"],
       },
       letterSpacing: {

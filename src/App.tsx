@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 import Clients from "./components/Clients";
@@ -7,7 +7,10 @@ import About from "./components/About";
 import Process from "./components/Process";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import LiquidScene from "./three/LiquidScene";
+
+// Three.js is the heaviest dependency in the app. Split it into its own chunk
+// so first paint (hero + aurora backdrop) isn't blocked on the WebGL bundle.
+const LiquidScene = lazy(() => import("./three/LiquidScene"));
 import {
   initReveals,
   initSmoothScroll,
@@ -51,7 +54,9 @@ export default function App() {
 
       {/* Fixed 3D scene — blob weaves across the page as you scroll */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.78]">
-        <LiquidScene />
+        <Suspense fallback={null}>
+          <LiquidScene />
+        </Suspense>
       </div>
 
       {/* Content sits above the 3D layer */}

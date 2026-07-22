@@ -136,12 +136,13 @@ export default function LiquidScene() {
       alpha: true,
       powerPreference: "high-performance",
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 1.75));
     renderer.setSize(window.innerWidth, window.innerHeight);
     mount.appendChild(renderer.domElement);
 
-    // Blob
-    const detail = isMobile ? 20 : 44;
+    // Blob — subdivision level tuned so the noise displacement stays smooth
+    // without paying for tens of thousands of unnecessary vertices per frame.
+    const detail = isMobile ? 16 : 28;
     const geometry = new THREE.IcosahedronGeometry(1.25, detail);
     const uniforms = {
       uTime: { value: 0 },
@@ -219,6 +220,7 @@ export default function LiquidScene() {
     let smoothScroll = scrollN;
 
     const render = () => {
+      raf = requestAnimationFrame(render);
       const t = clock.getElapsedTime();
       mouse.x += (targetMouse.x - mouse.x) * 0.05;
       mouse.y += (targetMouse.y - mouse.y) * 0.05;
@@ -252,12 +254,25 @@ export default function LiquidScene() {
       starsNear.position.x = -mouse.x * 0.9;
 
       renderer.render(scene, camera);
-      raf = requestAnimationFrame(render);
     };
     render();
 
+    // Pause the loop entirely while the tab is hidden — no point animating a
+    // background canvas nobody can see, and it keeps the clock from jumping.
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      } else if (!raf) {
+        clock.getDelta();
+        render();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
       cancelAnimationFrame(raf);
+      document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);

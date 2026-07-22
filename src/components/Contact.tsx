@@ -23,7 +23,7 @@ export default function Contact() {
               </a>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2" data-reveal>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2" data-reveal>
               {socials.map((s) => {
                 const isLink = s.url !== "#";
                 const Tag = isLink ? "a" : "div";
@@ -31,11 +31,11 @@ export default function Contact() {
                   <Tag
                     key={s.label}
                     {...(isLink ? { href: s.url, target: "_blank", rel: "noreferrer" } : {})}
-                    className="group flex h-full flex-col justify-between overflow-hidden rounded-2xl glass p-5 transition-transform duration-300 hover:-translate-y-1"
+                    className="group flex h-full flex-col justify-between gap-6 overflow-hidden rounded-2xl glass p-5 transition-transform duration-300 hover:-translate-y-1"
                   >
                     <span className="text-xs uppercase tracking-[0.2em] text-haze">{s.label}</span>
-                    <span className="mt-6 flex items-start justify-between gap-3">
-                      <span className="min-w-0 break-words font-display text-lg font-semibold leading-snug text-white">
+                    <span className="flex items-end justify-between gap-2">
+                      <span className="min-w-0 break-words font-display text-[0.95rem] leading-tight text-white sm:text-base">
                         {s.handle}
                       </span>
                       {isLink && (

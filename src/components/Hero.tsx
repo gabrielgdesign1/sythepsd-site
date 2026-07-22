@@ -70,7 +70,7 @@ export default function Hero() {
           <h1 className="font-display font-extrabold leading-[0.82] tracking-tightest">
             <span className="block overflow-hidden">
               <span className="hero-word inline-block text-[19vw] text-gradient md:text-[15vw]">
-                SYTHE
+                Sythe
               </span>
             </span>
           </h1>
